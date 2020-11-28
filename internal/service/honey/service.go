@@ -1,6 +1,10 @@
 package honey
 
-import "honey/internal/config"
+import (
+	"honey/internal/config"
+
+	"github.com/jmoiron/sqlx"
+)
 
 //Season ...
 type Season struct {
@@ -16,12 +20,13 @@ type HoneyService interface {
 }
 
 type service struct {
+	db   *sqlx.DB
 	conf *config.Config
 }
 
 //New ...
-func New(c *config.Config) (HoneyService, error) {
-	return service{c}, nil
+func New(db *sqlx.DB, c *config.Config) (HoneyService, error) {
+	return service{db, c}, nil
 }
 
 func (s service) AddSeason(sn Season) error {
@@ -34,6 +39,6 @@ func (s service) FindByID(ID int) *Season {
 
 func (s service) FindAll() []*Season {
 	var list []*Season
-	list = append(list, &Season{0, "temporada 1"})
+	s.db.Select(&list, "SELECT * FROM seasons")
 	return list
 }
