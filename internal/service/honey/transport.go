@@ -55,7 +55,36 @@ func makeEndpoints(s HoneyService) []*endpoint {
 		function: updateSeason(s),
 	})
 
+	list = append(list, &endpoint{
+		method:   "DELETE",
+		path:     "/seasons/:id",
+		function: deleteSeason(s),
+	})
+
 	return list
+}
+
+func deleteSeason(s HoneyService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ID := c.Param("id")
+		id, err := strconv.Atoi(ID)
+		if err != nil {
+			c.JSON(http.StatusNotImplemented, gin.H{
+				"mensaje": "Valor ingresado no valido",
+			})
+			return
+		}
+		err = s.DeleteSeason(id)
+		if err != nil {
+			c.JSON(http.StatusNotImplemented, gin.H{
+				"mensaje": "A ocurrido un error en el servidor",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"mensaje": "todo correcto",
+		})
+	}
 }
 
 func updateSeason(s HoneyService) gin.HandlerFunc {

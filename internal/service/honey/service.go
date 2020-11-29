@@ -18,6 +18,7 @@ type HoneyService interface {
 	UpdateSeason(Season, int) error
 	FindByID(int) Season
 	FindAll() []*Season
+	DeleteSeason(int) error
 }
 
 type service struct {
@@ -30,12 +31,14 @@ func New(db *sqlx.DB, c *config.Config) (HoneyService, error) {
 	return service{db, c}, nil
 }
 
+func (s service) DeleteSeason(ID int) error {
+	_, err := s.db.Exec("DELETE FROM seasons WHERE id=?", ID)
+	return err
+}
+
 func (s service) UpdateSeason(sn Season, ID int) error {
 	_, err := s.db.Exec("UPDATE seasons SET name = ? WHERE id = ?", sn.Name, ID)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (s service) AddSeason(sn Season) {
