@@ -8,8 +8,10 @@ import (
 
 //Season ...
 type Season struct {
-	ID   int64
-	Name string
+	ID    int64
+	Name  string
+	Hives int64
+	Drums int64
 }
 
 //HoneyService ...
@@ -37,13 +39,13 @@ func (s service) DeleteSeason(ID int) error {
 }
 
 func (s service) UpdateSeason(sn Season, ID int) error {
-	_, err := s.db.Exec("UPDATE seasons SET name = ? WHERE id = ?", sn.Name, ID)
+	_, err := s.db.Exec("UPDATE seasons SET name = ?, hives = ?, drums = ? WHERE id = ?", sn.Name, sn.Hives, sn.Drums, ID)
 	return err
 }
 
 func (s service) AddSeason(sn Season) {
-	insertSeason := `INSERT INTO seasons (name) VALUES (?)`
-	s.db.MustExec(insertSeason, sn.Name)
+	insertSeason := `INSERT INTO seasons (name, hives, drums) VALUES (?, ?, ?)`
+	s.db.MustExec(insertSeason, sn.Name, sn.Hives, sn.Drums)
 }
 
 func (s service) FindByID(ID int) (Season, error) {

@@ -22,20 +22,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	/*if err := crateSchema(db); err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}*/
-
 	service, _ := honey.New(db, cfg)
 	httpService := honey.NewHTTPTransport(service)
 
 	r := gin.Default()
 	httpService.Register(r)
 	r.Run()
-	/*for _, s := range service.FindAll() {
-		fmt.Println(s)
-	}*/
 }
 
 func readConfig() *config.Config {
@@ -50,15 +42,3 @@ func readConfig() *config.Config {
 
 	return cfg
 }
-
-/*func crateSchema(db *sqlx.DB) error {
-	schema := `CREATE TABLE IF NOT EXISTS seasons (
-		id integer primary key autoincrement,
-		name varchar);`
-
-	_, err := db.Exec(schema)
-	if err != nil {
-		return err
-	}
-
-}*/

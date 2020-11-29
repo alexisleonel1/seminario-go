@@ -70,7 +70,7 @@ func deleteSeason(s HoneyService) gin.HandlerFunc {
 
 		ID, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			c.JSON(http.StatusNotImplemented, gin.H{
+			c.JSON(501, gin.H{
 				"mensaje": "Valor invalido",
 			})
 			return
@@ -78,13 +78,13 @@ func deleteSeason(s HoneyService) gin.HandlerFunc {
 
 		err = s.DeleteSeason(ID)
 		if err != nil {
-			c.JSON(http.StatusNotImplemented, gin.H{
+			c.JSON(501, gin.H{
 				"mensaje": "A ocurrido un error en el servidor",
 			})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{
+		c.JSON(200, gin.H{
 			"mensaje": "se elimino",
 		})
 	}
@@ -95,7 +95,7 @@ func updateSeason(s HoneyService) gin.HandlerFunc {
 		var body Season
 		ID, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			c.JSON(http.StatusNotImplemented, gin.H{
+			c.JSON(501, gin.H{
 				"season": "Ingrese un valor valido",
 			})
 		}
@@ -142,7 +142,7 @@ func getID(s HoneyService) gin.HandlerFunc {
 
 		ID, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			c.JSON(http.StatusNotImplemented, gin.H{
+			c.JSON(501, gin.H{
 				"season": "Ingrese un valor valido",
 			})
 			return
@@ -166,8 +166,8 @@ func getAll(s HoneyService) gin.HandlerFunc {
 
 		sn, err := s.FindAll()
 		if err != nil {
-			c.JSON(204, gin.H{
-				"mensaje": "no existen archivos",
+			c.JSON(501, gin.H{
+				"mensaje": "error en el servidor",
 			})
 			return
 		}
