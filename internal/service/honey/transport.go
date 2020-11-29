@@ -29,6 +29,7 @@ func NewHTTPTransport(s HoneyService) HTTPService {
 }
 
 func makeEndpoints(s HoneyService) []*endpoint {
+
 	list := []*endpoint{}
 
 	list = append(list, &endpoint{
@@ -66,21 +67,23 @@ func makeEndpoints(s HoneyService) []*endpoint {
 
 func deleteSeason(s HoneyService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ID := c.Param("id")
-		id, err := strconv.Atoi(ID)
+
+		ID, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			c.JSON(http.StatusNotImplemented, gin.H{
-				"mensaje": "Valor ingresado no valido",
+				"mensaje": "Valor invalido",
 			})
 			return
 		}
-		err = s.DeleteSeason(id)
+
+		err = s.DeleteSeason(ID)
 		if err != nil {
 			c.JSON(http.StatusNotImplemented, gin.H{
 				"mensaje": "A ocurrido un error en el servidor",
 			})
 			return
 		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"mensaje": "todo correcto",
 		})
@@ -90,30 +93,30 @@ func deleteSeason(s HoneyService) gin.HandlerFunc {
 func updateSeason(s HoneyService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var body Season
-		ID := c.Param("id")
-		id, err := strconv.Atoi(ID)
-		if err == nil {
-			if err := c.ShouldBindJSON(&body); err != nil {
-				c.JSON(422, gin.H{
-					"mensaje": "peticion invalida",
-				})
-				return
-			}
-			err := s.UpdateSeason(body, id)
-			if err != nil {
-				c.JSON(501, gin.H{
-					"mensaje": "a ocurrido un error",
-				})
-				return
-			}
-			c.JSON(200, gin.H{
-				"mensaje": "peticion recibida",
-			})
-		} else {
+		ID, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
 			c.JSON(http.StatusNotImplemented, gin.H{
 				"season": "Ingrese un valor valido",
 			})
 		}
+
+		if err := c.ShouldBindJSON(&body); err != nil {
+			c.JSON(422, gin.H{
+				"mensaje": "peticion invalida",
+			})
+			return
+		}
+
+		err = s.UpdateSeason(body, ID)
+		if err != nil {
+			c.JSON(501, gin.H{
+				"mensaje": "a ocurrido un error",
+			})
+			return
+		}
+		c.JSON(200, gin.H{
+			"mensaje": "peticion recibida",
+		})
 
 	}
 }
@@ -136,24 +139,41 @@ func addSeason(s HoneyService) gin.HandlerFunc {
 
 func getID(s HoneyService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ID := c.Param("id")
-		id, err := strconv.Atoi(ID)
-		if err == nil {
-			c.JSON(http.StatusOK, gin.H{
-				"season": s.FindByID(id),
-			})
-		} else {
+
+		ID, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
 			c.JSON(http.StatusNotImplemented, gin.H{
 				"season": "Ingrese un valor valido",
 			})
+			return
 		}
+
+		sn, err := s.FindByID(ID)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"mensaje": "no existe",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"season": sn,
+		})
 	}
 }
 
 func getAll(s HoneyService) gin.HandlerFunc {
 	return func(c *gin.Context) {
+
+		sn, err := s.FindAll()
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{
+				"mensaje": "no existen archivos",
+			})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
-			"seasons": s.FindAll(),
+			"seasons": sn,
 		})
 	}
 }

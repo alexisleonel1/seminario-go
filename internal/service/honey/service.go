@@ -16,8 +16,8 @@ type Season struct {
 type HoneyService interface {
 	AddSeason(Season)
 	UpdateSeason(Season, int) error
-	FindByID(int) Season
-	FindAll() []*Season
+	FindByID(int) (Season, error)
+	FindAll() ([]*Season, error)
 	DeleteSeason(int) error
 }
 
@@ -46,14 +46,14 @@ func (s service) AddSeason(sn Season) {
 	s.db.MustExec(insertSeason, sn.Name)
 }
 
-func (s service) FindByID(ID int) Season {
+func (s service) FindByID(ID int) (Season, error) {
 	var sn Season
-	s.db.Get(&sn, "SELECT * FROM seasons WHERE id = ?;", ID)
-	return sn
+	err := s.db.Get(&sn, "SELECT * FROM seasons WHERE id = ?;", ID)
+	return sn, err
 }
 
-func (s service) FindAll() []*Season {
+func (s service) FindAll() ([]*Season, error) {
 	var list []*Season
-	s.db.Select(&list, "SELECT * FROM seasons")
-	return list
+	err := s.db.Select(&list, "SELECT * FROM seasons")
+	return list, err
 }
