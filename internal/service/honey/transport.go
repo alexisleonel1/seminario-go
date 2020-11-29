@@ -85,7 +85,7 @@ func deleteSeason(s HoneyService) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"mensaje": "todo correcto",
+			"mensaje": "se elimino",
 		})
 	}
 }
@@ -131,7 +131,7 @@ func addSeason(s HoneyService) gin.HandlerFunc {
 			return
 		}
 		s.AddSeason(body)
-		c.JSON(200, gin.H{
+		c.JSON(201, gin.H{
 			"mensaje": "peticion recibida",
 		})
 	}
@@ -150,7 +150,7 @@ func getID(s HoneyService) gin.HandlerFunc {
 
 		sn, err := s.FindByID(ID)
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
+			c.JSON(204, gin.H{
 				"mensaje": "no existe",
 			})
 			return
@@ -166,7 +166,7 @@ func getAll(s HoneyService) gin.HandlerFunc {
 
 		sn, err := s.FindAll()
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
+			c.JSON(204, gin.H{
 				"mensaje": "no existen archivos",
 			})
 			return
