@@ -8,14 +8,15 @@ import (
 
 //Season ...
 type Season struct {
-	ID   int64
-	Name string
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
 }
 
 //HoneyService ...
 type HoneyService interface {
-	AddSeason(Season) error
-	FindByID(int) *Season
+	AddSeason(Season)
+	UpdateSeason(Season, int) error
+	FindByID(int) Season
 	FindAll() []*Season
 }
 
@@ -29,12 +30,23 @@ func New(db *sqlx.DB, c *config.Config) (HoneyService, error) {
 	return service{db, c}, nil
 }
 
-func (s service) AddSeason(sn Season) error {
+func (s service) UpdateSeason(sn Season, ID int) error {
+	_, err := s.db.Exec("UPDATE seasons SET name = ? WHERE id = ?", sn.Name, ID)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-func (s service) FindByID(ID int) *Season {
-	return nil
+func (s service) AddSeason(sn Season) {
+	insertSeason := `INSERT INTO seasons (name) VALUES (?)`
+	s.db.MustExec(insertSeason, sn.Name)
+}
+
+func (s service) FindByID(ID int) Season {
+	var sn Season
+	s.db.Get(&sn, "SELECT * FROM seasons WHERE id = ?;", ID)
+	return sn
 }
 
 func (s service) FindAll() []*Season {
